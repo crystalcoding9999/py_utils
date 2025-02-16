@@ -134,7 +134,17 @@ def is_float(e: any) -> bool:
 
 # input utils
 
-def str_input(*args, force_input=True, show_error=True, error_message="You cannot enter an empty value!") -> str | None:
+def str_input(
+        *args,
+        force_input=True,
+        show_error=True,
+        error_message="You cannot enter an empty value!",
+        validate_inputs=False,
+        validations=None,
+        validation_error="That is not an option"
+) -> str | None:
+    if validations is None:
+        validations = []
     res:str|None = None
 
     prompt = " ".join(map(str, args))
@@ -144,14 +154,27 @@ def str_input(*args, force_input=True, show_error=True, error_message="You canno
 
         if is_str(inp) and inp != "" and inp is not None:
             res = str(inp)
-            break
+            if validate_inputs:
+                if res not in validations:
+                    res = None
+                    print(validation_error)
         else:
             if show_error:
                 print(error_message)
 
     return res
 
-def int_input(*args, force_input=True, show_error=True, error_message="That is not a number") -> int | None:
+def int_input(
+        *args,
+        force_input=True,
+        show_error=True,
+        error_message="That is not a number",
+        validate_inputs=False,
+        validations=None,
+        validation_error="That is not an option"
+) -> int | None:
+    if validations is None:
+        validations = []
     res:int|None = None
 
     prompt = " ".join(map(str, args))
@@ -161,14 +184,27 @@ def int_input(*args, force_input=True, show_error=True, error_message="That is n
 
         if is_int(inp):
             res = int(inp)
-            break
+            if validate_inputs:
+                if res not in validations:
+                    res = None
+                    print(validation_error)
         else:
             if show_error:
                 print(error_message)
 
     return res
 
-def float_input(*args, force_input=True, show_error=True, error_message="That is not a number") -> float | None:
+def float_input(
+        *args,
+        force_input=True,
+        show_error=True,
+        error_message="That is not a number",
+        validate_inputs=False,
+        validations=None,
+        validation_error="That is not an option"
+) -> float | None:
+    if validations is None:
+        validations = []
     res:float|None = None
 
     prompt = " ".join(map(str, args))
@@ -178,7 +214,10 @@ def float_input(*args, force_input=True, show_error=True, error_message="That is
 
         if is_float(inp):
             res = float(inp)
-            break
+            if validate_inputs:
+                if res not in validations:
+                    res = None
+                    print(validation_error)
         else:
             if show_error:
                 print(error_message)
