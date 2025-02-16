@@ -27,10 +27,7 @@ __empty_terminal_os_IMPORT_WARNING = False
 __empty_terminal_NO_TERM_WARNING = False
 __color_print_colorama_IMPORT_WARNING = False
 
-# utils
-
 # terminal utils
-
 def clear_terminal():
     empty_terminal()
 def empty_terminal():
@@ -86,3 +83,84 @@ def color_print(color, *args):
 def print_at(x, y, *args):
     # no library requirements
     print("\033[{0};{1}H{2}".format(y, x, " ".join(map(str, args))))
+
+# check utils
+def is_str(e: any) -> bool:
+    if e is None:
+        return False
+    try:
+        str(e)
+        return True
+    except ValueError:
+        return False
+
+def is_int(e: any) -> bool:
+    if e is None:
+        return False
+    try:
+        int(e)
+        return True
+    except ValueError:
+        return False
+
+def is_float(e: any) -> bool:
+    if e is None:
+        return False
+    try:
+        float(e)
+        return True
+    except ValueError:
+        return False
+
+# input utils
+
+def str_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> str | None:
+    res:str|None = None
+
+    prompt = " ".join(map(str, args))
+
+    while res is None and force_input:
+        inp = input(prompt)
+
+        if is_str(inp) and inp != "" and inp is not None:
+            res = str(inp)
+            break
+        else:
+            if show_error:
+                print(error_message)
+
+    return res
+
+def int_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> int | None:
+    res:int|None = None
+
+    prompt = " ".join(map(str, args))
+
+    while res is None and force_input:
+        inp = input(prompt)
+
+        if is_int(inp):
+            res = int(inp)
+            break
+        else:
+            if show_error:
+                print(error_message)
+
+    return res
+
+def float_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> float | None:
+    res:float|None = None
+
+    prompt = " ".join(map(str, args))
+
+    while res is None and force_input:
+        inp = input(prompt)
+
+        if is_float(inp):
+            res = float(inp)
+            break
+        else:
+            if show_error:
+                print(error_message)
+
+    return res
