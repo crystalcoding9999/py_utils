@@ -82,3 +82,7 @@ def color_print(color, *args):
     s = " ".join(map(str, args))
 
     print(color + s + colorama.Fore.RESET)
+
+def print_at(x, y, *args):
+    # no library requirements
+    print("\033[{0};{1}H{2}".format(y, x, " ".join(map(str, args))))
