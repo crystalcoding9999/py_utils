@@ -1,4 +1,6 @@
-# only package that is always imported
+from utils.colors import Colors
+
+import sys
 import importlib
 
 # import attempts
@@ -21,6 +23,15 @@ def __try_colorama_import():
         return colorama
     except ModuleNotFoundError:
         return None
+
+
+def __ansi_supported():
+    if sys.platform != "win32":
+        return True
+    os = __try_os_import()
+    if os is None:
+        return False
+    return "ANSICON" in os.environ or "WT_SESSION" in os.environ or os.environ.get("TERM_PROGRAM") == "vscode"
 
 # import warnings
 __empty_terminal_os_IMPORT_WARNING = False
@@ -57,6 +68,12 @@ def empty_terminal():
     os.system("cls" if os.name == "nt" else "clear")
 
 def color_print(color, *args):
+    if color in Colors.__dict__.values() and __ansi_supported():
+        s = " ".join(map(str, args))
+
+        print(color + s)
+        return
+
     colorama = __try_colorama_import()
     global __color_print_colorama_IMPORT_WARNING
     if colorama is None:
@@ -80,9 +97,12 @@ def color_print(color, *args):
 
     print(color + s + colorama.Fore.RESET)
 
-def print_at(x, y, *args):
+def print_at(x, y, *args, color:Colors=Colors.RESET):
     # no library requirements
-    print("\033[{0};{1}H{2}".format(y, x, " ".join(map(str, args))))
+    if __ansi_supported():
+        print("\033[{0};{1}H{3}{2}".format(y, x, " ".join(map(str, args)), color))
+    else:
+        print("\033[{0};{1}H{2}".format(y, x, " ".join(map(str, args))))
 
 # check utils
 def is_str(e: any) -> bool:
@@ -114,7 +134,7 @@ def is_float(e: any) -> bool:
 
 # input utils
 
-def str_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> str | None:
+def str_input(*args, force_input=True, show_error=True, error_message="You cannot enter an empty value!") -> str | None:
     res:str|None = None
 
     prompt = " ".join(map(str, args))
@@ -131,7 +151,7 @@ def str_input(*args, force_input=True, show_error=True, error_message="\033[93mT
 
     return res
 
-def int_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> int | None:
+def int_input(*args, force_input=True, show_error=True, error_message="That is not a number") -> int | None:
     res:int|None = None
 
     prompt = " ".join(map(str, args))
@@ -148,7 +168,7 @@ def int_input(*args, force_input=True, show_error=True, error_message="\033[93mT
 
     return res
 
-def float_input(*args, force_input=True, show_error=True, error_message="\033[93mThat is not a number\033[0m") -> float | None:
+def float_input(*args, force_input=True, show_error=True, error_message="That is not a number") -> float | None:
     res:float|None = None
 
     prompt = " ".join(map(str, args))
